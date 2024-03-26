@@ -39,6 +39,9 @@ int main(void)
         {
             joyStickPushedtoLeft = true;
         }
+        if(vy < LEFT_THRESHOLD){
+            joystickPushedUp = true;
+        }
 
         MoveCircle(&g_sContext, joyStickPushedtoLeft,joyStickPushedtoRight);
      }
@@ -71,7 +74,8 @@ void initADC() {
     // This configures the ADC to store output results
     // in ADC_MEM0 for joystick X.
     // Todo: if we want to add joystick Y, then, we have to use more memory locations
-    ADC14_configureMultiSequenceMode(ADC_MEM0, ADC_MEM0, true);
+    ADC14_configureMultiSequenceMode(ADC_MEM0, ADC_MEM1, true);
+
 
     // This configures the ADC in manual conversion mode
     // Software will start each conversion.
@@ -110,7 +114,20 @@ void initJoyStick() {
                                                GPIO_TERTIARY_MODULE_FUNCTION);
 
     // TODO: add joystick Y
+    ADC14_configureConversionMemory(ADC_MEM1,
+                                    ADC_VREFPOS_AVCC_VREFNEG_VSS,
+                                    ADC_INPUT_A9,                 // joystick Y
+                                    ADC_NONDIFFERENTIAL_INPUTS);
 
+    // This selects the GPIO as analog input
+    // A15 is multiplexed on GPIO port P6 pin PIN0
+    // TODO: which one of GPIO_PRIMARY_MODULE_FUNCTION, or
+    //                    GPIO_SECONDARY_MODULE_FUNCTION, or
+    //                    GPIO_TERTIARY_MODULE_FUNCTION
+    // should be used in place of 0 as the last argument?
+    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P4,
+                                               GPIO_PIN4,
+                                               GPIO_TERTIARY_MODULE_FUNCTION);
 }
 
 void getSampleJoyStick(unsigned *X, unsigned *Y) {
@@ -118,5 +135,6 @@ void getSampleJoyStick(unsigned *X, unsigned *Y) {
     *X = ADC14_getResult(ADC_MEM0);
 
     // TODO: Read the Y channel
+    *Y = ADC14_getResult(ADC_MEM1);
 }
 
