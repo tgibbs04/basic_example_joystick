@@ -4,6 +4,9 @@
 
 
 #define LEFT_THRESHOLD  1500
+#define RIGHT_THRESHOLD 14000
+#define DOWN_THRESHOLD 1500
+#define UP_THRESHOLD 14000
 
 
 
@@ -33,22 +36,22 @@ int main(void)
         getSampleJoyStick(&vx, &vy);
         bool joyStickPushedtoRight = false;
         bool joyStickPushedtoLeft = false;
+        bool joyStickPushedUp = false;
+        bool joyStickPushedDown = false;
         drawXY(&g_sContext, vx, vy);
 
         if (vx < LEFT_THRESHOLD)
-        {
             joyStickPushedtoLeft = true;
-        }
-        if(vy < LEFT_THRESHOLD){
-            joystickPushedUp = true;
-        }
+        if(vx > RIGHT_THRESHOLD)
+            joyStickPushedtoRight = true;
+        if(vy > UP_THRESHOLD)
+            joyStickPushedUp = true;
+        if(vy < DOWN_THRESHOLD)
+            joyStickPushedDown = true;
 
-        MoveCircle(&g_sContext, joyStickPushedtoLeft,joyStickPushedtoRight);
+        MoveCircle(&g_sContext, joyStickPushedtoLeft,joyStickPushedtoRight, joyStickPushedUp, joyStickPushedDown);
      }
 }
-
-
-
 
 void initialize()
 {
@@ -137,4 +140,3 @@ void getSampleJoyStick(unsigned *X, unsigned *Y) {
     // TODO: Read the Y channel
     *Y = ADC14_getResult(ADC_MEM1);
 }
-
